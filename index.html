@@ -5,12 +5,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>QR Code & Barcode Generator | ZHR Tools</title>
+<title>QR Code Generator | ZHR Tools</title>
 
 <link rel="icon" href="/favicon.png">
 
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jsbarcode/dist/JsBarcode.all.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
 
@@ -37,6 +37,8 @@ max-width:400px;
 height:50px;
 }
 
+/* TITLE */
+
 .page-title{
 text-align:center;
 font-size:28px;
@@ -45,30 +47,48 @@ margin:25px 0;
 font-weight:700;
 }
 
+/* CONTAINER */
+
 .container{
 max-width:1100px;
 margin:auto;
 padding:20px;
 }
 
-.grid{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:30px;
+/* TABS */
+
+.tabs{
+display:flex;
+flex-wrap:wrap;
+gap:10px;
+justify-content:center;
+margin-bottom:20px;
 }
 
-.card{
+.tabs button{
+background:#001d4c;
+color:white;
+border:none;
+padding:10px 15px;
+border-radius:5px;
+cursor:pointer;
+}
+
+.tab-content{
+display:none;
 background:white;
 padding:25px;
 border-radius:8px;
 box-shadow:0 6px 20px rgba(0,0,0,0.08);
 }
 
-.card h2{
-color:#001d4c;
+.tab-content.active{
+display:block;
 }
 
-input,select,textarea{
+/* INPUTS */
+
+input, textarea{
 width:100%;
 padding:10px;
 margin-top:10px;
@@ -77,25 +97,46 @@ border:1px solid #ccc;
 font-size:14px;
 }
 
-button{
+/* BUTTON */
+
+.generate-btn{
 background:#001d4c;
 color:white;
 border:none;
 padding:12px;
-margin-top:12px;
+margin-top:15px;
 border-radius:6px;
 cursor:pointer;
 width:100%;
 }
 
+/* OUTPUT */
+
 .output{
 text-align:center;
-margin-top:20px;
+margin-top:25px;
+}
+
+.download-buttons{
+margin-top:10px;
+display:flex;
+gap:10px;
+justify-content:center;
+flex-wrap:wrap;
+}
+
+.download-buttons button{
+background:#001d4c;
+color:white;
+border:none;
+padding:10px 15px;
+border-radius:5px;
+cursor:pointer;
 }
 
 @media(max-width:768px){
-.grid{
-grid-template-columns:1fr;
+.tabs{
+flex-direction:column;
 }
 }
 
@@ -109,91 +150,118 @@ grid-template-columns:1fr;
 <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg-FrquxVNT6X8mePEZk64LLCgRVikX9PnuPOSqK4CKoL9-r2wGHbx1zt7_q-6dlITZ4wfQSnuXLkJDvq8DxSnruDo6wE-kEBY86sLYgJTe8WMxIQN3y4ah6Ffc2As2_z4rGs3cxyBAr3ik-S-GYA6MIm4F4p74-43WT3s573TJoXgdDRPBT1UEP1Q1EFY/s1920/1736676952-picsayjdndnndnd.jpg">
 </div>
 
-<h1 class="page-title">QR Code & Barcode Generator</h1>
+<h1 class="page-title">QR Code Generator</h1>
 
 <div class="container">
 
-<div class="grid">
+<div class="tabs">
 
-<!-- QR GENERATOR -->
+<button onclick="showTab('text')">Text</button>
+<button onclick="showTab('url')">URL</button>
+<button onclick="showTab('vcard')">vCard</button>
+<button onclick="showTab('business')">Business Card</button>
+<button onclick="showTab('social')">Social Media</button>
+<button onclick="showTab('email')">Email</button>
+<button onclick="showTab('maps')">Google Maps</button>
 
-<div class="card">
+</div>
 
-<h2>QR Code Generator</h2>
+<!-- TEXT -->
 
-<label>QR Type</label>
+<div id="text" class="tab-content active">
 
-<select id="qrType">
+<textarea id="textInput" placeholder="Enter text"></textarea>
 
-<option value="text">Text</option>
-<option value="url">URL</option>
-<option value="phone">Phone</option>
-<option value="email">Email</option>
-<option value="sms">SMS</option>
+<button class="generate-btn" onclick="generateQR(textInput.value)">
+Generate QR Code
+</button>
 
-<option value="wifi">WiFi</option>
-<option value="vcard">vCard Contact</option>
-<option value="location">Google Maps Location</option>
-<option value="calendar">Calendar Event</option>
+</div>
 
-<option value="whatsapp">WhatsApp Message</option>
-<option value="instagram">Instagram Profile</option>
-<option value="linkedin">LinkedIn Profile</option>
-<option value="facebook">Facebook Page</option>
-<option value="youtube">YouTube Channel</option>
+<!-- URL -->
 
-<option value="upi">UPI Payment</option>
-<option value="paypal">PayPal Payment</option>
-<option value="stripe">Stripe Payment Link</option>
+<div id="url" class="tab-content">
 
-<option value="app">App Download</option>
-<option value="coupon">Coupon Code</option>
-<option value="survey">Survey Link</option>
-<option value="ticket">Event Ticket</option>
+<input id="urlInput" placeholder="Enter URL">
 
-</select>
+<button class="generate-btn" onclick="generateQR(urlInput.value)">
+Generate QR Code
+</button>
 
-<textarea id="qrInput" placeholder="Enter required information"></textarea>
+</div>
 
-<button onclick="generateQR()">Generate QR Code</button>
+<!-- VCARD -->
+
+<div id="vcard" class="tab-content">
+
+<input id="name" placeholder="Full Name">
+<input id="phone" placeholder="Phone">
+<input id="emailV" placeholder="Email">
+<input id="company" placeholder="Company">
+<input id="website" placeholder="Website">
+
+<button class="generate-btn" onclick="generateVCard()">Generate QR Code</button>
+
+</div>
+
+<!-- BUSINESS CARD -->
+
+<div id="business" class="tab-content">
+
+<input id="bname" placeholder="Name">
+<input id="btitle" placeholder="Job Title">
+<input id="bphone" placeholder="Phone">
+<input id="bemail" placeholder="Email">
+<input id="bcompany" placeholder="Company">
+
+<button class="generate-btn" onclick="generateBusiness()">Generate QR Code</button>
+
+</div>
+
+<!-- SOCIAL -->
+
+<div id="social" class="tab-content">
+
+<input id="insta" placeholder="Instagram Username">
+<input id="whatsapp" placeholder="WhatsApp Number">
+<input id="linkedin" placeholder="LinkedIn Profile URL">
+
+<button class="generate-btn" onclick="generateSocial()">Generate QR Code</button>
+
+</div>
+
+<!-- EMAIL -->
+
+<div id="email" class="tab-content">
+
+<input id="emailTo" placeholder="Email Address">
+<input id="subject" placeholder="Subject">
+<textarea id="body" placeholder="Email Body"></textarea>
+
+<button class="generate-btn" onclick="generateEmail()">Generate QR Code</button>
+
+</div>
+
+<!-- MAP -->
+
+<div id="maps" class="tab-content">
+
+<input id="location" placeholder="Enter Google Maps location">
+
+<button class="generate-btn" onclick="generateQR('https://maps.google.com/?q='+location.value)">
+Generate QR Code
+</button>
+
+</div>
 
 <div class="output">
 
 <div id="qrcode"></div>
 
-<button onclick="downloadQR()">Download QR</button>
+<div class="download-buttons">
 
-</div>
-
-</div>
-
-
-<!-- BARCODE -->
-
-<div class="card">
-
-<h2>Barcode Generator</h2>
-
-<input type="text" id="barcodeInput" placeholder="Enter barcode value">
-
-<select id="barcodeType">
-
-<option value="CODE128">CODE128</option>
-<option value="EAN13">EAN13</option>
-<option value="UPC">UPC</option>
-<option value="EAN8">EAN8</option>
-
-</select>
-
-<button onclick="generateBarcode()">Generate Barcode</button>
-
-<div class="output">
-
-<svg id="barcode"></svg>
-
-<button onclick="downloadBarcode()">Download Barcode</button>
-
-</div>
+<button onclick="downloadPNG()">Download PNG</button>
+<button onclick="downloadPDF()">Download PDF</button>
 
 </div>
 
@@ -203,96 +271,101 @@ grid-template-columns:1fr;
 
 <script>
 
-function generateQR(){
+function showTab(tab){
 
-document.getElementById("qrcode").innerHTML="";
+document.querySelectorAll(".tab-content").forEach(el=>{
+el.classList.remove("active")
+})
 
-let type=document.getElementById("qrType").value;
+document.getElementById(tab).classList.add("active")
 
-let input=document.getElementById("qrInput").value;
+}
 
-let data=input;
+function generateQR(data){
 
-if(type==="phone") data="tel:"+input;
-
-if(type==="email") data="mailto:"+input;
-
-if(type==="sms") data="sms:"+input;
-
-if(type==="whatsapp") data="https://wa.me/"+input;
-
-if(type==="instagram") data="https://instagram.com/"+input;
-
-if(type==="linkedin") data="https://linkedin.com/in/"+input;
-
-if(type==="facebook") data="https://facebook.com/"+input;
-
-if(type==="youtube") data="https://youtube.com/"+input;
-
-if(type==="location") data="https://maps.google.com/?q="+input;
-
-if(type==="wifi") data="WIFI:S:"+input+";T:WPA;P:password;;";
-
-if(type==="upi") data="upi://pay?pa="+input;
-
-if(type==="paypal") data="https://paypal.me/"+input;
-
-if(type==="stripe") data=input;
+document.getElementById("qrcode").innerHTML=""
 
 new QRCode(document.getElementById("qrcode"),{
 text:data,
-width:200,
-height:200
-});
+width:220,
+height:220
+})
 
 }
 
-function generateBarcode(){
+function generateVCard(){
 
-let value=document.getElementById("barcodeInput").value;
+let data=`BEGIN:VCARD
+VERSION:3.0
+FN:${name.value}
+TEL:${phone.value}
+EMAIL:${emailV.value}
+ORG:${company.value}
+URL:${website.value}
+END:VCARD`
 
-let type=document.getElementById("barcodeType").value;
-
-JsBarcode("#barcode",value,{
-format:type,
-width:2,
-height:80,
-displayValue:true
-});
-
-}
-
-function downloadQR(){
-
-let img=document.querySelector("#qrcode img");
-
-let link=document.createElement("a");
-
-link.href=img.src;
-
-link.download="qr-code.png";
-
-link.click();
+generateQR(data)
 
 }
 
-function downloadBarcode(){
+function generateBusiness(){
 
-let svg=document.getElementById("barcode");
+let data=`BEGIN:VCARD
+VERSION:3.0
+FN:${bname.value}
+TITLE:${btitle.value}
+TEL:${bphone.value}
+EMAIL:${bemail.value}
+ORG:${bcompany.value}
+END:VCARD`
 
-let xml=new XMLSerializer().serializeToString(svg);
+generateQR(data)
 
-let blob=new Blob([xml],{type:"image/svg+xml"});
+}
 
-let url=URL.createObjectURL(blob);
+function generateSocial(){
 
-let link=document.createElement("a");
+let data=`Instagram: https://instagram.com/${insta.value}
+WhatsApp: https://wa.me/${whatsapp.value}
+LinkedIn: ${linkedin.value}`
 
-link.href=url;
+generateQR(data)
 
-link.download="barcode.svg";
+}
 
-link.click();
+function generateEmail(){
+
+let data=`mailto:${emailTo.value}?subject=${subject.value}&body=${body.value}`
+
+generateQR(data)
+
+}
+
+function downloadPNG(){
+
+let img=document.querySelector("#qrcode img")
+
+let link=document.createElement("a")
+
+link.href=img.src
+
+link.download="qr-code.png"
+
+link.click()
+
+}
+
+function downloadPDF(){
+
+const { jsPDF } = window.jspdf
+
+let pdf=new jsPDF()
+
+let img=document.querySelector("#qrcode img")
+
+pdf.addImage(img.src,'PNG',50,40,100,100)
+
+pdf.save("qr-code.pdf")
 
 }
 
