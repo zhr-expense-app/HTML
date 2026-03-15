@@ -5,26 +5,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>HTML Editor | ZHR Tools</title>
+<title>QR Code & Barcode Generator | ZHR Tools</title>
 
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
+<link rel="icon" href="/favicon.png">
 
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/dracula.min.css">
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/xml/xml.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/javascript/javascript.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/css/css.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/htmlmixed/htmlmixed.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode/dist/JsBarcode.all.min.js"></script>
 
 <style>
 
 body{
 font-family:'Segoe UI',sans-serif;
-margin:0;
 background:#f8f9fb;
+margin:0;
 }
 
 /* HEADER */
@@ -44,80 +37,66 @@ max-width:400px;
 height:50px;
 }
 
-/* TITLE */
-
 .page-title{
 text-align:center;
-font-size:26px;
-font-weight:700;
+font-size:28px;
 color:#001d4c;
-margin:20px 0;
+margin:25px 0;
+font-weight:700;
 }
 
-/* BUTTONS */
+.container{
+max-width:1100px;
+margin:auto;
+padding:20px;
+}
 
-.controls{
-text-align:center;
-margin-bottom:10px;
+.grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:30px;
+}
+
+.card{
+background:white;
+padding:25px;
+border-radius:8px;
+box-shadow:0 6px 20px rgba(0,0,0,0.08);
+}
+
+.card h2{
+color:#001d4c;
+}
+
+input,select,textarea{
+width:100%;
+padding:10px;
+margin-top:10px;
+border-radius:5px;
+border:1px solid #ccc;
+font-size:14px;
 }
 
 button{
 background:#001d4c;
 color:white;
 border:none;
-padding:10px 16px;
-margin:5px;
-border-radius:5px;
-font-size:14px;
+padding:12px;
+margin-top:12px;
+border-radius:6px;
 cursor:pointer;
+width:100%;
 }
 
-button:hover{
-opacity:0.9;
-}
-
-/* EDITOR GRID */
-
-.editor-container{
-display:grid;
-grid-template-columns:1fr 1fr 1fr;
-gap:10px;
-padding:10px;
-height:70vh;
-}
-
-.editor-box{
-display:flex;
-flex-direction:column;
-}
-
-.editor-title{
-background:#001d4c;
-color:white;
-padding:6px;
-font-size:14px;
+.output{
 text-align:center;
+margin-top:20px;
 }
-
-.CodeMirror{
-flex:1;
-height:100%;
-font-size:14px;
-}
-
-/* MOBILE */
 
 @media(max-width:768px){
-
-.editor-container{
+.grid{
 grid-template-columns:1fr;
-height:auto;
 }
-
-.CodeMirror{
-height:250px;
-}
-
 }
 
 </style>
@@ -130,172 +109,188 @@ height:250px;
 <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg-FrquxVNT6X8mePEZk64LLCgRVikX9PnuPOSqK4CKoL9-r2wGHbx1zt7_q-6dlITZ4wfQSnuXLkJDvq8DxSnruDo6wE-kEBY86sLYgJTe8WMxIQN3y4ah6Ffc2As2_z4rGs3cxyBAr3ik-S-GYA6MIm4F4p74-43WT3s573TJoXgdDRPBT1UEP1Q1EFY/s1920/1736676952-picsayjdndnndnd.jpg">
 </div>
 
-<h1 class="page-title">HTML / CSS / JavaScript Editor</h1>
+<h1 class="page-title">QR Code & Barcode Generator</h1>
 
-<div class="controls">
+<div class="container">
 
-<button onclick="runCode()">Run Code</button>
-<button onclick="clearCode()">Clear</button>
-<button onclick="copyCode()">Copy Code</button>
-<button onclick="downloadHTML()">Download HTML</button>
+<div class="grid">
+
+<!-- QR GENERATOR -->
+
+<div class="card">
+
+<h2>QR Code Generator</h2>
+
+<label>QR Type</label>
+
+<select id="qrType">
+
+<option value="text">Text</option>
+<option value="url">URL</option>
+<option value="phone">Phone</option>
+<option value="email">Email</option>
+<option value="sms">SMS</option>
+
+<option value="wifi">WiFi</option>
+<option value="vcard">vCard Contact</option>
+<option value="location">Google Maps Location</option>
+<option value="calendar">Calendar Event</option>
+
+<option value="whatsapp">WhatsApp Message</option>
+<option value="instagram">Instagram Profile</option>
+<option value="linkedin">LinkedIn Profile</option>
+<option value="facebook">Facebook Page</option>
+<option value="youtube">YouTube Channel</option>
+
+<option value="upi">UPI Payment</option>
+<option value="paypal">PayPal Payment</option>
+<option value="stripe">Stripe Payment Link</option>
+
+<option value="app">App Download</option>
+<option value="coupon">Coupon Code</option>
+<option value="survey">Survey Link</option>
+<option value="ticket">Event Ticket</option>
+
+</select>
+
+<textarea id="qrInput" placeholder="Enter required information"></textarea>
+
+<button onclick="generateQR()">Generate QR Code</button>
+
+<div class="output">
+
+<div id="qrcode"></div>
+
+<button onclick="downloadQR()">Download QR</button>
 
 </div>
 
-<div class="editor-container">
-
-<div class="editor-box">
-<div class="editor-title">HTML</div>
-<textarea id="htmlCode">
-
-<h1>Hello ZHR Tools</h1>
-<p>This is your HTML editor.</p>
-
-</textarea>
 </div>
 
-<div class="editor-box">
-<div class="editor-title">CSS</div>
-<textarea id="cssCode">
 
-body{
-font-family:Arial;
-background:#f2f2f2;
-text-align:center;
-}
+<!-- BARCODE -->
 
-h1{
-color:#001d4c;
-}
+<div class="card">
 
-</textarea>
+<h2>Barcode Generator</h2>
+
+<input type="text" id="barcodeInput" placeholder="Enter barcode value">
+
+<select id="barcodeType">
+
+<option value="CODE128">CODE128</option>
+<option value="EAN13">EAN13</option>
+<option value="UPC">UPC</option>
+<option value="EAN8">EAN8</option>
+
+</select>
+
+<button onclick="generateBarcode()">Generate Barcode</button>
+
+<div class="output">
+
+<svg id="barcode"></svg>
+
+<button onclick="downloadBarcode()">Download Barcode</button>
+
 </div>
 
-<div class="editor-box">
-<div class="editor-title">JavaScript</div>
-<textarea id="jsCode">
+</div>
 
-console.log("Welcome to ZHR HTML Editor");
-
-</textarea>
 </div>
 
 </div>
 
 <script>
 
-/* Initialize editors */
+function generateQR(){
 
-var htmlEditor=CodeMirror.fromTextArea(document.getElementById("htmlCode"),{
-mode:"htmlmixed",
-theme:"dracula",
-lineNumbers:true
+document.getElementById("qrcode").innerHTML="";
+
+let type=document.getElementById("qrType").value;
+
+let input=document.getElementById("qrInput").value;
+
+let data=input;
+
+if(type==="phone") data="tel:"+input;
+
+if(type==="email") data="mailto:"+input;
+
+if(type==="sms") data="sms:"+input;
+
+if(type==="whatsapp") data="https://wa.me/"+input;
+
+if(type==="instagram") data="https://instagram.com/"+input;
+
+if(type==="linkedin") data="https://linkedin.com/in/"+input;
+
+if(type==="facebook") data="https://facebook.com/"+input;
+
+if(type==="youtube") data="https://youtube.com/"+input;
+
+if(type==="location") data="https://maps.google.com/?q="+input;
+
+if(type==="wifi") data="WIFI:S:"+input+";T:WPA;P:password;;";
+
+if(type==="upi") data="upi://pay?pa="+input;
+
+if(type==="paypal") data="https://paypal.me/"+input;
+
+if(type==="stripe") data=input;
+
+new QRCode(document.getElementById("qrcode"),{
+text:data,
+width:200,
+height:200
 });
-
-var cssEditor=CodeMirror.fromTextArea(document.getElementById("cssCode"),{
-mode:"css",
-theme:"dracula",
-lineNumbers:true
-});
-
-var jsEditor=CodeMirror.fromTextArea(document.getElementById("jsCode"),{
-mode:"javascript",
-theme:"dracula",
-lineNumbers:true
-});
-
-/* Run code in new tab */
-
-function runCode(){
-
-let html=htmlEditor.getValue();
-let css=cssEditor.getValue();
-let js=jsEditor.getValue();
-
-let preview=window.open();
-
-preview.document.write(
-
-`<html>
-<head>
-<style>${css}</style>
-</head>
-
-<body>
-
-${html}
-
-<script>
-${js}
-<\/script>
-
-</body>
-</html>`
-
-);
-
-preview.document.close();
 
 }
 
-/* Clear editors */
+function generateBarcode(){
 
-function clearCode(){
+let value=document.getElementById("barcodeInput").value;
 
-htmlEditor.setValue("");
-cssEditor.setValue("");
-jsEditor.setValue("");
+let type=document.getElementById("barcodeType").value;
 
-}
-
-/* Copy code */
-
-function copyCode(){
-
-let code=
-htmlEditor.getValue()+
-"\n<style>\n"+cssEditor.getValue()+
-"\n</style>\n<script>\n"+jsEditor.getValue()+
-"\n</script>";
-
-navigator.clipboard.writeText(code);
-
-alert("Code copied!");
+JsBarcode("#barcode",value,{
+format:type,
+width:2,
+height:80,
+displayValue:true
+});
 
 }
 
-/* Download HTML */
+function downloadQR(){
 
-function downloadHTML(){
-
-let html=htmlEditor.getValue();
-let css=cssEditor.getValue();
-let js=jsEditor.getValue();
-
-let file=
-
-`<html>
-<head>
-<style>${css}</style>
-</head>
-
-<body>
-
-${html}
-
-<script>
-${js}
-<\/script>
-
-</body>
-</html>`;
-
-let blob=new Blob([file],{type:"text/html"});
+let img=document.querySelector("#qrcode img");
 
 let link=document.createElement("a");
 
-link.href=URL.createObjectURL(blob);
+link.href=img.src;
 
-link.download="zhr-editor.html";
+link.download="qr-code.png";
+
+link.click();
+
+}
+
+function downloadBarcode(){
+
+let svg=document.getElementById("barcode");
+
+let xml=new XMLSerializer().serializeToString(svg);
+
+let blob=new Blob([xml],{type:"image/svg+xml"});
+
+let url=URL.createObjectURL(blob);
+
+let link=document.createElement("a");
+
+link.href=url;
+
+link.download="barcode.svg";
 
 link.click();
 
