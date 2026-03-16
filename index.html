@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
 <meta charset="UTF-8">
@@ -13,6 +14,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
+
+/* BODY */
 
 body{
 font-family:'Segoe UI',sans-serif;
@@ -28,13 +31,79 @@ top:0;
 z-index:1000;
 background:white;
 text-align:center;
-padding:15px 5px 10px;
+padding:15px 0 10px;
 border-bottom:1px solid #eee;
 }
 
 .logo-header img{
-max-width:400px;
 height:50px;
+}
+
+/* MENU ICON */
+
+.menu-icon{
+position:absolute;
+left:20px;
+top:18px;
+font-size:28px;
+cursor:pointer;
+color:#001d4c;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+height:100%;
+width:0;
+position:fixed;
+top:0;
+left:0;
+background:#001d4c;
+overflow-x:hidden;
+transition:0.35s;
+padding-top:60px;
+z-index:2000;
+box-shadow:4px 0 20px rgba(0,0,0,0.3);
+}
+
+.sidebar a{
+padding:12px 25px;
+text-decoration:none;
+font-size:17px;
+color:white;
+display:block;
+}
+
+.sidebar a:hover{
+background:rgba(255,255,255,0.1);
+}
+
+.closebtn{
+position:absolute;
+top:10px;
+right:20px;
+font-size:32px;
+}
+
+.menu-category{
+color:#cbd5ff;
+font-size:13px;
+padding:15px 25px 5px;
+text-transform:uppercase;
+letter-spacing:1px;
+}
+
+/* OVERLAY */
+
+#overlay{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.5);
+display:none;
+z-index:1500;
 }
 
 /* TITLE */
@@ -74,6 +143,8 @@ border-radius:5px;
 cursor:pointer;
 }
 
+/* TAB CONTENT */
+
 .tab-content{
 display:none;
 background:white;
@@ -110,7 +181,7 @@ cursor:pointer;
 width:100%;
 }
 
-/* OUTPUT */
+/* QR OUTPUT */
 
 .output{
 text-align:center;
@@ -146,8 +217,44 @@ flex-direction:column;
 
 <body>
 
+<!-- HEADER -->
+
 <div class="logo-header">
+
+<div class="menu-icon" onclick="openSidebar()">☰</div>
+
 <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg-FrquxVNT6X8mePEZk64LLCgRVikX9PnuPOSqK4CKoL9-r2wGHbx1zt7_q-6dlITZ4wfQSnuXLkJDvq8DxSnruDo6wE-kEBY86sLYgJTe8WMxIQN3y4ah6Ffc2As2_z4rGs3cxyBAr3ik-S-GYA6MIm4F4p74-43WT3s573TJoXgdDRPBT1UEP1Q1EFY/s1920/1736676952-picsayjdndnndnd.jpg">
+
+</div>
+
+<!-- OVERLAY -->
+
+<div id="overlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+
+<div id="sidebar" class="sidebar">
+
+<a href="javascript:void(0)" class="closebtn" onclick="closeSidebar()">×</a>
+
+<a href="/">🏠 Home</a>
+
+<div class="menu-category">Financial Tools</div>
+
+<a href="/gst-calculator.html">GST Calculator</a>
+<a href="/vat-calculator.html">VAT Calculator</a>
+<a href="/emi-loan-calculator.html">EMI Calculator</a>
+
+<div class="menu-category">Developer Tools</div>
+
+<a href="/html-editor.html">HTML Editor</a>
+<a href="/json-formatter.html">JSON Formatter</a>
+
+<div class="menu-category">Utilities</div>
+
+<a href="/qr-code-generator.html">QR Generator</a>
+<a href="/password-generator.html">Password Generator</a>
+
 </div>
 
 <h1 class="page-title">QR Code Generator</h1>
@@ -160,7 +267,7 @@ flex-direction:column;
 <button onclick="showTab('url')">URL</button>
 <button onclick="showTab('vcard')">vCard</button>
 <button onclick="showTab('business')">Business Card</button>
-<button onclick="showTab('social')">Social Media</button>
+<button onclick="showTab('social')">Social</button>
 <button onclick="showTab('email')">Email</button>
 <button onclick="showTab('maps')">Google Maps</button>
 
@@ -172,9 +279,7 @@ flex-direction:column;
 
 <textarea id="textInput" placeholder="Enter text"></textarea>
 
-<button class="generate-btn" onclick="generateQR(textInput.value)">
-Generate QR Code
-</button>
+<button class="generate-btn" onclick="generateQR(textInput.value)">Generate QR</button>
 
 </div>
 
@@ -184,9 +289,7 @@ Generate QR Code
 
 <input id="urlInput" placeholder="Enter URL">
 
-<button class="generate-btn" onclick="generateQR(urlInput.value)">
-Generate QR Code
-</button>
+<button class="generate-btn" onclick="generateQR(urlInput.value)">Generate QR</button>
 
 </div>
 
@@ -200,21 +303,21 @@ Generate QR Code
 <input id="company" placeholder="Company">
 <input id="website" placeholder="Website">
 
-<button class="generate-btn" onclick="generateVCard()">Generate QR Code</button>
+<button class="generate-btn" onclick="generateVCard()">Generate QR</button>
 
 </div>
 
-<!-- BUSINESS CARD -->
+<!-- BUSINESS -->
 
 <div id="business" class="tab-content">
 
 <input id="bname" placeholder="Name">
-<input id="btitle" placeholder="Job Title">
+<input id="btitle" placeholder="Title">
 <input id="bphone" placeholder="Phone">
 <input id="bemail" placeholder="Email">
 <input id="bcompany" placeholder="Company">
 
-<button class="generate-btn" onclick="generateBusiness()">Generate QR Code</button>
+<button class="generate-btn" onclick="generateBusiness()">Generate QR</button>
 
 </div>
 
@@ -224,9 +327,9 @@ Generate QR Code
 
 <input id="insta" placeholder="Instagram Username">
 <input id="whatsapp" placeholder="WhatsApp Number">
-<input id="linkedin" placeholder="LinkedIn Profile URL">
+<input id="linkedin" placeholder="LinkedIn URL">
 
-<button class="generate-btn" onclick="generateSocial()">Generate QR Code</button>
+<button class="generate-btn" onclick="generateSocial()">Generate QR</button>
 
 </div>
 
@@ -236,9 +339,9 @@ Generate QR Code
 
 <input id="emailTo" placeholder="Email Address">
 <input id="subject" placeholder="Subject">
-<textarea id="body" placeholder="Email Body"></textarea>
+<textarea id="bodyMail" placeholder="Email Body"></textarea>
 
-<button class="generate-btn" onclick="generateEmail()">Generate QR Code</button>
+<button class="generate-btn" onclick="generateEmail()">Generate QR</button>
 
 </div>
 
@@ -246,11 +349,9 @@ Generate QR Code
 
 <div id="maps" class="tab-content">
 
-<input id="location" placeholder="Enter Google Maps location">
+<input id="location" placeholder="Enter Location">
 
-<button class="generate-btn" onclick="generateQR('https://maps.google.com/?q='+location.value)">
-Generate QR Code
-</button>
+<button class="generate-btn" onclick="generateQR('https://maps.google.com/?q='+location.value)">Generate QR</button>
 
 </div>
 
@@ -271,6 +372,20 @@ Generate QR Code
 
 <script>
 
+/* SIDEBAR */
+
+function openSidebar(){
+document.getElementById("sidebar").style.width="270px"
+document.getElementById("overlay").style.display="block"
+}
+
+function closeSidebar(){
+document.getElementById("sidebar").style.width="0"
+document.getElementById("overlay").style.display="none"
+}
+
+/* TABS */
+
 function showTab(tab){
 
 document.querySelectorAll(".tab-content").forEach(el=>{
@@ -280,6 +395,8 @@ el.classList.remove("active")
 document.getElementById(tab).classList.add("active")
 
 }
+
+/* QR GENERATOR */
 
 function generateQR(data){
 
@@ -292,6 +409,8 @@ height:220
 })
 
 }
+
+/* VCARD */
 
 function generateVCard(){
 
@@ -308,6 +427,8 @@ generateQR(data)
 
 }
 
+/* BUSINESS CARD */
+
 function generateBusiness(){
 
 let data=`BEGIN:VCARD
@@ -323,6 +444,8 @@ generateQR(data)
 
 }
 
+/* SOCIAL */
+
 function generateSocial(){
 
 let data=`Instagram: https://instagram.com/${insta.value}
@@ -333,13 +456,17 @@ generateQR(data)
 
 }
 
+/* EMAIL */
+
 function generateEmail(){
 
-let data=`mailto:${emailTo.value}?subject=${subject.value}&body=${body.value}`
+let data=`mailto:${emailTo.value}?subject=${subject.value}&body=${bodyMail.value}`
 
 generateQR(data)
 
 }
+
+/* DOWNLOAD PNG */
 
 function downloadPNG(){
 
@@ -354,6 +481,8 @@ link.download="qr-code.png"
 link.click()
 
 }
+
+/* DOWNLOAD PDF */
 
 function downloadPDF(){
 
