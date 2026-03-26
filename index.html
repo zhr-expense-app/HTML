@@ -1,504 +1,146 @@
-<!DOCTYPE html>
-<html lang="en">
-
+<!DOCTYPE html><html lang="en">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>QR Code Generator | ZHR Tools</title>
-
-<link rel="icon" href="/favicon.png">
-
-<script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-<style>
-
-/* BODY */
-
+<title>ZHR Dice Game</title>
+<link rel="stylesheet" href="layout.css">
+<script src="https://unpkg.com/lucide@latest"></script><style>
 body{
-font-family:'Segoe UI',sans-serif;
-background:#f8f9fb;
-margin:0;
+  background: linear-gradient(135deg,#001d4c,#003a8c);
+  color:white;
+  font-family:'Segoe UI',sans-serif;
+  text-align:center;
 }
-
-/* HEADER */
-
-.logo-header{
-position:sticky;
-top:0;
-z-index:1000;
-background:white;
-text-align:center;
-padding:15px 0 10px;
-border-bottom:1px solid #eee;
-}
-
-.logo-header img{
-height:50px;
-}
-
-/* MENU ICON */
-
-.menu-icon{
-position:absolute;
-left:20px;
-top:18px;
-font-size:28px;
-cursor:pointer;
-color:#001d4c;
-}
-
-/* SIDEBAR */
-
-.sidebar{
-height:100%;
-width:0;
-position:fixed;
-top:0;
-left:0;
-background:#001d4c;
-overflow-x:hidden;
-transition:0.35s;
-padding-top:60px;
-z-index:2000;
-box-shadow:4px 0 20px rgba(0,0,0,0.3);
-}
-
-.sidebar a{
-padding:12px 25px;
-text-decoration:none;
-font-size:17px;
-color:white;
-display:block;
-}
-
-.sidebar a:hover{
-background:rgba(255,255,255,0.1);
-}
-
-.closebtn{
-position:absolute;
-top:10px;
-right:20px;
-font-size:32px;
-}
-
-.menu-category{
-color:#cbd5ff;
-font-size:13px;
-padding:15px 25px 5px;
-text-transform:uppercase;
-letter-spacing:1px;
-}
-
-/* OVERLAY */
-
-#overlay{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:rgba(0,0,0,0.5);
-display:none;
-z-index:1500;
-}
-
-/* TITLE */
-
-.page-title{
-text-align:center;
-font-size:28px;
-color:#001d4c;
-margin:25px 0;
-font-weight:700;
-}
-
-/* CONTAINER */
 
 .container{
-max-width:1100px;
-margin:auto;
-padding:20px;
+  margin-top:60px;
 }
 
-/* TABS */
-
-.tabs{
-display:flex;
-flex-wrap:wrap;
-gap:10px;
-justify-content:center;
-margin-bottom:20px;
+.title{
+  font-size:36px;
+  font-weight:700;
+  margin-bottom:20px;
 }
 
-.tabs button{
-background:#001d4c;
-color:white;
-border:none;
-padding:10px 15px;
-border-radius:5px;
-cursor:pointer;
+.dice-container{
+  display:flex;
+  justify-content:center;
+  gap:40px;
+  margin:40px 0;
 }
 
-/* TAB CONTENT */
-
-.tab-content{
-display:none;
-background:white;
-padding:25px;
-border-radius:8px;
-box-shadow:0 6px 20px rgba(0,0,0,0.08);
+.dice{
+  width:120px;
+  height:120px;
+  background:white;
+  border-radius:20px;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  grid-template-rows:repeat(3,1fr);
+  padding:15px;
+  box-shadow:0 20px 40px rgba(0,0,0,0.4);
+  transform-style:preserve-3d;
+  transition: transform 0.6s;
 }
 
-.tab-content.active{
-display:block;
+.dot{
+  width:20px;
+  height:20px;
+  border-radius:50%;
+  margin:auto;
 }
 
-/* INPUTS */
+.red{background:#ff4d4d;}
+.blue{background:#4da6ff;}
+.green{background:#4dff88;}
+.yellow{background:#ffd24d;}
+.purple{background:#c77dff;}
+.black{background:#222;}
 
-input, textarea{
-width:100%;
-padding:10px;
-margin-top:10px;
-border-radius:5px;
-border:1px solid #ccc;
-font-size:14px;
+button{
+  background:#ffd24d;
+  border:none;
+  padding:12px 30px;
+  font-size:18px;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:600;
+  color:#001d4c;
 }
 
-/* BUTTON */
-
-.generate-btn{
-background:#001d4c;
-color:white;
-border:none;
-padding:12px;
-margin-top:15px;
-border-radius:6px;
-cursor:pointer;
-width:100%;
+button:hover{
+  transform:scale(1.05);
 }
 
-/* QR OUTPUT */
-
-.output{
-text-align:center;
-margin-top:25px;
+.result{
+  margin-top:20px;
+  font-size:22px;
+  font-weight:600;
 }
 
-.download-buttons{
-margin-top:10px;
-display:flex;
-gap:10px;
-justify-content:center;
-flex-wrap:wrap;
+</style></head><body>
+<div id="header"></div>
+<div id="sidebar-container"></div><div class="container"><div class="title">🎲 ZHR Dice Game</div><div class="dice-container">
+  <div id="dice1" class="dice"></div>
+  <div id="dice2" class="dice"></div>
+</div><button onclick="rollDice()">Roll Dice</button>
+
+<div class="result" id="result"></div></div><script>
+
+function createDice(dice, num){
+  dice.innerHTML = "";
+
+  const positions = {
+    1:[4],
+    2:[0,8],
+    3:[0,4,8],
+    4:[0,2,6,8],
+    5:[0,2,4,6,8],
+    6:[0,2,3,5,6,8]
+  };
+
+  const colors = ["red","blue","green","yellow","purple","black"];
+
+  for(let i=0;i<9;i++){
+    const dot = document.createElement("div");
+
+    if(positions[num].includes(i)){
+      dot.classList.add("dot", colors[num-1]);
+    }
+
+    dice.appendChild(dot);
+  }
 }
 
-.download-buttons button{
-background:#001d4c;
-color:white;
-border:none;
-padding:10px 15px;
-border-radius:5px;
-cursor:pointer;
+function rollDice(){
+
+  const d1 = Math.floor(Math.random()*6)+1;
+  const d2 = Math.floor(Math.random()*6)+1;
+
+  const dice1 = document.getElementById("dice1");
+  const dice2 = document.getElementById("dice2");
+
+  dice1.style.transform = "rotateY(360deg) rotateX(360deg)";
+  dice2.style.transform = "rotateY(360deg) rotateX(360deg)";
+
+  setTimeout(()=>{
+    createDice(dice1,d1);
+    createDice(dice2,d2);
+
+    let resultText = "";
+
+    if(d1 > d2) resultText = "Player 1 Wins 🎉";
+    else if(d2 > d1) resultText = "Player 2 Wins 🎉";
+    else resultText = "It's a Draw 🤝";
+
+    document.getElementById("result").innerText = resultText;
+
+  },300);
 }
 
-@media(max-width:768px){
-.tabs{
-flex-direction:column;
-}
-}
-
-</style>
-
-</head>
-
-<body>
-
-<!-- HEADER -->
-
-<div class="logo-header">
-
-<div class="menu-icon" onclick="openSidebar()">☰</div>
-
-<img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg-FrquxVNT6X8mePEZk64LLCgRVikX9PnuPOSqK4CKoL9-r2wGHbx1zt7_q-6dlITZ4wfQSnuXLkJDvq8DxSnruDo6wE-kEBY86sLYgJTe8WMxIQN3y4ah6Ffc2As2_z4rGs3cxyBAr3ik-S-GYA6MIm4F4p74-43WT3s573TJoXgdDRPBT1UEP1Q1EFY/s1920/1736676952-picsayjdndnndnd.jpg">
-
-</div>
-
-<!-- OVERLAY -->
-
-<div id="overlay" onclick="closeSidebar()"></div>
-
-<!-- SIDEBAR -->
-
-<div id="sidebar" class="sidebar">
-
-<a href="javascript:void(0)" class="closebtn" onclick="closeSidebar()">×</a>
-
-<a href="/">🏠 Home</a>
-
-<div class="menu-category">Financial Tools</div>
-
-<a href="/gst-calculator.html">GST Calculator</a>
-<a href="/vat-calculator.html">VAT Calculator</a>
-<a href="/emi-loan-calculator.html">EMI Calculator</a>
-
-<div class="menu-category">Developer Tools</div>
-
-<a href="/html-editor.html">HTML Editor</a>
-<a href="/json-formatter.html">JSON Formatter</a>
-
-<div class="menu-category">Utilities</div>
-
-<a href="/qr-code-generator.html">QR Generator</a>
-<a href="/password-generator.html">Password Generator</a>
-
-</div>
-
-<h1 class="page-title">QR Code Generator</h1>
-
-<div class="container">
-
-<div class="tabs">
-
-<button onclick="showTab('text')">Text</button>
-<button onclick="showTab('url')">URL</button>
-<button onclick="showTab('vcard')">vCard</button>
-<button onclick="showTab('business')">Business Card</button>
-<button onclick="showTab('social')">Social</button>
-<button onclick="showTab('email')">Email</button>
-<button onclick="showTab('maps')">Google Maps</button>
-
-</div>
-
-<!-- TEXT -->
-
-<div id="text" class="tab-content active">
-
-<textarea id="textInput" placeholder="Enter text"></textarea>
-
-<button class="generate-btn" onclick="generateQR(textInput.value)">Generate QR</button>
-
-</div>
-
-<!-- URL -->
-
-<div id="url" class="tab-content">
-
-<input id="urlInput" placeholder="Enter URL">
-
-<button class="generate-btn" onclick="generateQR(urlInput.value)">Generate QR</button>
-
-</div>
-
-<!-- VCARD -->
-
-<div id="vcard" class="tab-content">
-
-<input id="name" placeholder="Full Name">
-<input id="phone" placeholder="Phone">
-<input id="emailV" placeholder="Email">
-<input id="company" placeholder="Company">
-<input id="website" placeholder="Website">
-
-<button class="generate-btn" onclick="generateVCard()">Generate QR</button>
-
-</div>
-
-<!-- BUSINESS -->
-
-<div id="business" class="tab-content">
-
-<input id="bname" placeholder="Name">
-<input id="btitle" placeholder="Title">
-<input id="bphone" placeholder="Phone">
-<input id="bemail" placeholder="Email">
-<input id="bcompany" placeholder="Company">
-
-<button class="generate-btn" onclick="generateBusiness()">Generate QR</button>
-
-</div>
-
-<!-- SOCIAL -->
-
-<div id="social" class="tab-content">
-
-<input id="insta" placeholder="Instagram Username">
-<input id="whatsapp" placeholder="WhatsApp Number">
-<input id="linkedin" placeholder="LinkedIn URL">
-
-<button class="generate-btn" onclick="generateSocial()">Generate QR</button>
-
-</div>
-
-<!-- EMAIL -->
-
-<div id="email" class="tab-content">
-
-<input id="emailTo" placeholder="Email Address">
-<input id="subject" placeholder="Subject">
-<textarea id="bodyMail" placeholder="Email Body"></textarea>
-
-<button class="generate-btn" onclick="generateEmail()">Generate QR</button>
-
-</div>
-
-<!-- MAP -->
-
-<div id="maps" class="tab-content">
-
-<input id="location" placeholder="Enter Location">
-
-<button class="generate-btn" onclick="generateQR('https://maps.google.com/?q='+location.value)">Generate QR</button>
-
-</div>
-
-<div class="output">
-
-<div id="qrcode"></div>
-
-<div class="download-buttons">
-
-<button onclick="downloadPNG()">Download PNG</button>
-<button onclick="downloadPDF()">Download PDF</button>
-
-</div>
-
-</div>
-
-</div>
-
-<script>
-
-/* SIDEBAR */
-
-function openSidebar(){
-document.getElementById("sidebar").style.width="270px"
-document.getElementById("overlay").style.display="block"
-}
-
-function closeSidebar(){
-document.getElementById("sidebar").style.width="0"
-document.getElementById("overlay").style.display="none"
-}
-
-/* TABS */
-
-function showTab(tab){
-
-document.querySelectorAll(".tab-content").forEach(el=>{
-el.classList.remove("active")
-})
-
-document.getElementById(tab).classList.add("active")
-
-}
-
-/* QR GENERATOR */
-
-function generateQR(data){
-
-document.getElementById("qrcode").innerHTML=""
-
-new QRCode(document.getElementById("qrcode"),{
-text:data,
-width:220,
-height:220
-})
-
-}
-
-/* VCARD */
-
-function generateVCard(){
-
-let data=`BEGIN:VCARD
-VERSION:3.0
-FN:${name.value}
-TEL:${phone.value}
-EMAIL:${emailV.value}
-ORG:${company.value}
-URL:${website.value}
-END:VCARD`
-
-generateQR(data)
-
-}
-
-/* BUSINESS CARD */
-
-function generateBusiness(){
-
-let data=`BEGIN:VCARD
-VERSION:3.0
-FN:${bname.value}
-TITLE:${btitle.value}
-TEL:${bphone.value}
-EMAIL:${bemail.value}
-ORG:${bcompany.value}
-END:VCARD`
-
-generateQR(data)
-
-}
-
-/* SOCIAL */
-
-function generateSocial(){
-
-let data=`Instagram: https://instagram.com/${insta.value}
-WhatsApp: https://wa.me/${whatsapp.value}
-LinkedIn: ${linkedin.value}`
-
-generateQR(data)
-
-}
-
-/* EMAIL */
-
-function generateEmail(){
-
-let data=`mailto:${emailTo.value}?subject=${subject.value}&body=${bodyMail.value}`
-
-generateQR(data)
-
-}
-
-/* DOWNLOAD PNG */
-
-function downloadPNG(){
-
-let img=document.querySelector("#qrcode img")
-
-let link=document.createElement("a")
-
-link.href=img.src
-
-link.download="qr-code.png"
-
-link.click()
-
-}
-
-/* DOWNLOAD PDF */
-
-function downloadPDF(){
-
-const { jsPDF } = window.jspdf
-
-let pdf=new jsPDF()
-
-let img=document.querySelector("#qrcode img")
-
-pdf.addImage(img.src,'PNG',50,40,100,100)
-
-pdf.save("qr-code.pdf")
-
-}
-
-</script>
-
-</body>
+// initial
+createDice(document.getElementById("dice1"),1);
+createDice(document.getElementById("dice2"),2);
+
+</script><script src="layout.js"></script></body>
 </html>
