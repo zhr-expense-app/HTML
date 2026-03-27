@@ -1,146 +1,188 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ZHR Dice Game</title>
+<title>ZHR 3D Dice</title>
 <link rel="stylesheet" href="layout.css">
-<script src="https://unpkg.com/lucide@latest"></script><style>
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<style>
 body{
-  background: linear-gradient(135deg,#001d4c,#003a8c);
-  color:white;
+  background:#ffffff;
   font-family:'Segoe UI',sans-serif;
+  margin:0;
   text-align:center;
 }
 
 .container{
-  margin-top:60px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:80vh;
+  flex-direction:column;
 }
 
 .title{
-  font-size:36px;
+  font-size:28px;
+  color:#001d4c;
   font-weight:700;
-  margin-bottom:20px;
+  margin-bottom:30px;
 }
 
-.dice-container{
+.scene{
+  width:150px;
+  height:150px;
+  perspective:600px;
+}
+
+.cube{
+  width:150px;
+  height:150px;
+  position:relative;
+  transform-style:preserve-3d;
+  transition: transform 1s ease;
+}
+
+.face{
+  position:absolute;
+  width:150px;
+  height:150px;
+  background:white;
+  border-radius:16px;
   display:flex;
   justify-content:center;
-  gap:40px;
-  margin:40px 0;
-}
-
-.dice{
-  width:120px;
-  height:120px;
-  background:white;
-  border-radius:20px;
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  grid-template-rows:repeat(3,1fr);
-  padding:15px;
-  box-shadow:0 20px 40px rgba(0,0,0,0.4);
-  transform-style:preserve-3d;
-  transition: transform 0.6s;
+  align-items:center;
+  box-shadow:0 10px 30px rgba(0,0,0,0.15);
 }
 
 .dot{
-  width:20px;
-  height:20px;
+  width:18px;
+  height:18px;
   border-radius:50%;
-  margin:auto;
+  margin:4px;
 }
 
-.red{background:#ff4d4d;}
-.blue{background:#4da6ff;}
-.green{background:#4dff88;}
-.yellow{background:#ffd24d;}
-.purple{background:#c77dff;}
-.black{background:#222;}
-
-button{
-  background:#ffd24d;
-  border:none;
-  padding:12px 30px;
-  font-size:18px;
-  border-radius:8px;
-  cursor:pointer;
-  font-weight:600;
-  color:#001d4c;
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  grid-template-rows:repeat(3,1fr);
+  width:80%;
+  height:80%;
 }
 
-button:hover{
-  transform:scale(1.05);
-}
+/* Face positions */
+.front{ transform: rotateY(0deg) translateZ(75px); }
+.back{ transform: rotateY(180deg) translateZ(75px); }
+.right{ transform: rotateY(90deg) translateZ(75px); }
+.left{ transform: rotateY(-90deg) translateZ(75px); }
+.top{ transform: rotateX(90deg) translateZ(75px); }
+.bottom{ transform: rotateX(-90deg) translateZ(75px); }
 
-.result{
+/* Colors */
+.c1{background:#ff4d4d;}
+.c2{background:#4da6ff;}
+.c3{background:#4dff88;}
+.c4{background:#ffd24d;}
+.c5{background:#c77dff;}
+.c6{background:#000;}
+
+.info{
   margin-top:20px;
-  font-size:22px;
+  color:#001d4c;
   font-weight:600;
 }
 
-</style></head><body>
+</style>
+</head>
+
+<body>
+
 <div id="header"></div>
-<div id="sidebar-container"></div><div class="container"><div class="title">🎲 ZHR Dice Game</div><div class="dice-container">
-  <div id="dice1" class="dice"></div>
-  <div id="dice2" class="dice"></div>
-</div><button onclick="rollDice()">Roll Dice</button>
+<div id="sidebar-container"></div>
 
-<div class="result" id="result"></div></div><script>
+<div class="container">
 
-function createDice(dice, num){
-  dice.innerHTML = "";
+<div class="title">🎲 Tap Dice to Roll</div>
 
-  const positions = {
-    1:[4],
-    2:[0,8],
-    3:[0,4,8],
-    4:[0,2,6,8],
-    5:[0,2,4,6,8],
-    6:[0,2,3,5,6,8]
-  };
+<div class="scene" onclick="rollDice()">
+  <div class="cube" id="cube">
 
-  const colors = ["red","blue","green","yellow","purple","black"];
+    <div class="face front" id="f1"></div>
+    <div class="face back" id="f6"></div>
+    <div class="face right" id="f3"></div>
+    <div class="face left" id="f4"></div>
+    <div class="face top" id="f5"></div>
+    <div class="face bottom" id="f2"></div>
+
+  </div>
+</div>
+
+<div class="info" id="result">Tap to roll 🎯</div>
+
+</div>
+
+<script>
+
+const positions = {
+  1:[4],
+  2:[0,8],
+  3:[0,4,8],
+  4:[0,2,6,8],
+  5:[0,2,4,6,8],
+  6:[0,2,3,5,6,8]
+};
+
+function createFace(id, num, color){
+  const face = document.getElementById(id);
+  face.innerHTML = "";
+
+  const grid = document.createElement("div");
+  grid.className = "grid";
 
   for(let i=0;i<9;i++){
     const dot = document.createElement("div");
 
     if(positions[num].includes(i)){
-      dot.classList.add("dot", colors[num-1]);
+      dot.className = "dot "+color;
     }
 
-    dice.appendChild(dot);
+    grid.appendChild(dot);
   }
+
+  face.appendChild(grid);
+}
+
+function setupDice(){
+  createFace("f1",1,"c1");
+  createFace("f2",2,"c2");
+  createFace("f3",3,"c3");
+  createFace("f4",4,"c4");
+  createFace("f5",5,"c5");
+  createFace("f6",6,"c6");
 }
 
 function rollDice(){
 
-  const d1 = Math.floor(Math.random()*6)+1;
-  const d2 = Math.floor(Math.random()*6)+1;
+  const cube = document.getElementById("cube");
 
-  const dice1 = document.getElementById("dice1");
-  const dice2 = document.getElementById("dice2");
+  const randomX = Math.floor(Math.random()*4)*90;
+  const randomY = Math.floor(Math.random()*4)*90;
 
-  dice1.style.transform = "rotateY(360deg) rotateX(360deg)";
-  dice2.style.transform = "rotateY(360deg) rotateX(360deg)";
+  cube.style.transform = `rotateX(${randomX}deg) rotateY(${randomY}deg)`;
 
-  setTimeout(()=>{
-    createDice(dice1,d1);
-    createDice(dice2,d2);
+  const sound = new Audio("https://www.soundjay.com/misc/sounds/dice-roll-1.mp3");
+  sound.play();
 
-    let resultText = "";
-
-    if(d1 > d2) resultText = "Player 1 Wins 🎉";
-    else if(d2 > d1) resultText = "Player 2 Wins 🎉";
-    else resultText = "It's a Draw 🤝";
-
-    document.getElementById("result").innerText = resultText;
-
-  },300);
+  const value = Math.floor(Math.random()*6)+1;
+  document.getElementById("result").innerText = "You rolled: " + value;
 }
 
-// initial
-createDice(document.getElementById("dice1"),1);
-createDice(document.getElementById("dice2"),2);
+setupDice();
 
-</script><script src="layout.js"></script></body>
+</script>
+
+<script src="layout.js"></script>
+
+</body>
 </html>
